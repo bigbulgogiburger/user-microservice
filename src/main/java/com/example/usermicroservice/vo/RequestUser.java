@@ -16,5 +16,5 @@ public class RequestUser {
     private String name;
     @NotNull(message = "can't be null")
     @Size(min=8,message = "input more than 8 characters")
-    private String password;
+    private String pwd;
 }

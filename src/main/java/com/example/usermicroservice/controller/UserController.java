@@ -1,6 +1,7 @@
 package com.example.usermicroservice.controller;
 
 import com.example.usermicroservice.dto.UserDto;
+import com.example.usermicroservice.entity.UserEntity;
 import com.example.usermicroservice.service.UserService;
 import com.example.usermicroservice.vo.Greeting;
 import com.example.usermicroservice.vo.RequestUser;
@@ -13,11 +14,15 @@ import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/")
+@RequestMapping("/user-service")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -27,7 +32,7 @@ public class UserController {
 
     @GetMapping("/health_check")
     public String status(){
-        return "It's working in user service";
+        return "It's working in user service on port : " +env.getProperty("local.server.port");
     }
 
     @GetMapping("/welcome")
@@ -47,5 +52,22 @@ public class UserController {
         ResponseUser responseUser = modelMapper.map(userDto, ResponseUser.class);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+    }
+
+    @GetMapping("/users")
+    public List<ResponseUser> getUsers(){
+        List<UserEntity> userList = userService.getUserByAll();
+        List<ResponseUser> result = new ArrayList<>();
+
+        userList.forEach(v-> result.add(new ModelMapper().map(v, ResponseUser.class))
+        );
+        return result;
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseUser getUser(@PathVariable("userId") String userId){
+        UserDto user = userService.getUserById(userId);
+
+        return new ModelMapper().map(user, ResponseUser.class);
     }
 }
