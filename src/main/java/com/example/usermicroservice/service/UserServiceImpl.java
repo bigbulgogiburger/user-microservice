@@ -7,12 +7,15 @@ import com.example.usermicroservice.vo.ResponseOrder;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,6 +37,12 @@ public class UserServiceImpl implements UserService{
 
         return mapper.map(userEntity,UserDto.class);
 
+    }
+
+    @Override
+    public UserDto getUserDetailsByEmail(String email) {
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException(email));
+        return new ModelMapper().map(user, UserDto.class);
     }
 
 
@@ -58,4 +67,11 @@ public class UserServiceImpl implements UserService{
 
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<UserEntity> userEntity = userRepository.findByEmail(username);
+        UserEntity user = userEntity.orElseThrow(() -> new UsernameNotFoundException(username));
+
+        return new User(user.getEmail(),user.getEncryptedPwd(),true,true,true,true,new ArrayList<>());
+    }
 }
