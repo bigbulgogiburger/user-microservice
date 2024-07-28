@@ -35,7 +35,11 @@ logging:
   level:
     com.example.usermicroservice: debug
 
-
-token:
-  expiration_time: 86400000
-  secret: user_token_is_very_good
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans
+#token:
+#  expiration_time: 86400000
+#  secret: user_token_is_very_good

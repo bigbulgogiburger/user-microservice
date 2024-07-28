@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    public static final String ALLOWED_IP_ADDRESS = "10.10.231.75";
+    public static final String ALLOWED_IP_ADDRESS = "192.168.10.102";
     public static final String SUBNET = "/32";
     public static final IpAddressMatcher ALLOWED_IP_ADDRESS_MATCHER = new IpAddressMatcher(ALLOWED_IP_ADDRESS + SUBNET);
     private final ObjectPostProcessor<Object> objectPostProcessor;
@@ -62,7 +62,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web -> web.ignoring().requestMatchers("/static/css/**", "/static/js/**", "*.ico",
                 "/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security",
-                "/swagger-ui.html", "/webjars/**", "/swagger/**");
+                "/swagger-ui.html", "/webjars/**", "/swagger/**","/actuator/**");
     }
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
