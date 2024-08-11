@@ -2,5 +2,7 @@ spring:
   cloud:
     config:
       uri: http://localhost:8888
-      # ecommerce.yml으로 지정했다고 생각함.
-      name: ecommerce
+      name: user-service
+#      name: config-service
+#      # ecommerce.yml으로 지정했다고 생각함.
+#      name: ecommerce
