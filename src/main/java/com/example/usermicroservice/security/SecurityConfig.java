@@ -10,7 +10,6 @@ import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
@@ -25,8 +24,9 @@ import java.util.function.Supplier;
 
 @Configuration
 @RequiredArgsConstructor
-public class SecurityConfig {
-    public static final String ALLOWED_IP_ADDRESS = "192.168.10.102";
+public class SecurityConfig{
+    //    public static final String ALLOWED_IP_ADDRESS = "192.168.10.102";
+    public static final String ALLOWED_IP_ADDRESS = "10.10.231.75";
     public static final String SUBNET = "/32";
     public static final IpAddressMatcher ALLOWED_IP_ADDRESS_MATCHER = new IpAddressMatcher(ALLOWED_IP_ADDRESS + SUBNET);
     private final ObjectPostProcessor<Object> objectPostProcessor;
@@ -36,18 +36,17 @@ public class SecurityConfig {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(
-                header ->
-                        header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
-        ).authorizeHttpRequests(authorize ->
-                authorize
-                        .requestMatchers("/**").access(this::hasIpAddress)
+                        header ->
+                                header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                ).authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers("/**").access(this::hasIpAddress)
 
-        )
+                )
                 .addFilter(getAuthenticationFilter())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -59,14 +58,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer(){
+    public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers("/static/css/**", "/static/js/**", "*.ico",
                 "/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security",
-                "/swagger-ui.html", "/webjars/**", "/swagger/**","/actuator/**");
+                "/swagger-ui.html", "/webjars/**", "/swagger/**", "/actuator/**");
     }
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(userService,env);
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(userService, env);
         AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder(objectPostProcessor);
         authenticationFilter.setAuthenticationManager(authenticationManager(builder));
         return authenticationFilter;
